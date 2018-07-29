@@ -395,7 +395,7 @@ def part_10():
     print('\n\n')
 
 # Comment in/out to run this part:
-part_10()
+# part_10()
 
 
 ############### Part 11 ###############
@@ -581,6 +581,7 @@ def part_14():
     # (Make sure already saved first with 'save_class' below. If not yet, comment out)
     classifier_f = open('naivebayes.pickle', 'rb')
     classifier = pickle.load(classifier_f)
+    classifier_f.close()
 
     print ('Naive Bayes Algo accuracy (%):', \
             nltk.classify.accuracy(classifier, testing_set)*100)
@@ -611,14 +612,138 @@ def part_14():
 # pip install scikit-learn
 # 
 
-# def part_15():
-#     import nltk
-#     import random
-#     from nltk.corpus import movie_reviews
-#     from nltk.classify.scikitlearn import 
-#     import pickle
+def part_15():
+    import nltk
+    import random
+    from nltk.corpus import movie_reviews
+    from nltk.classify.scikitlearn import SklearnClassifier                     #
+    from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB      #
+    from sklearn.linear_model import LogisticRegression, SGDClassifier          #
+    from sklearn.svm import SVC, LinearSVC, NuSVC                               #
+    import pickle
 
-# # Comment in/out to run this part:
-# # part_15()
+    documents = [(list(movie_reviews.words(fileid)),category)
+                  for category in movie_reviews.categories()
+                  for fileid in movie_reviews.fileids(category)] 
+    
+    random.shuffle(documents)
+
+    all_words = []
+    for w in movie_reviews.words():
+        all_words.append(w.lower())
+    
+    all_words = nltk.FreqDist(all_words)
+    word_features = list(all_words.keys())[:3000]
+
+    def find_features(document):
+        words = set(document) 
+        features = {}
+
+        for w in word_features:
+            features[w] = (w in words)
+        return features
+
+    featuresets = [(find_features(rev), category) for (rev, category) in documents]
+
+    training_set = featuresets[:1900]
+    testing_set  = featuresets[1900:]
+
+    def NB_Class(training_set, testing_set):
+        # classifier = nltk.NaiveBayesClassifier.train(training_set)
+
+        classifier_f = open('naivebayes.pickle', 'rb')
+        classifier = pickle.load(classifier_f)
+        classifier_f.close()
+
+        print ('Original Naive Bayes Algo accuracy (%):', \
+                nltk.classify.accuracy(classifier, testing_set)*100)
+
+        # classifier.show_most_informative_features(15)
+
+        # Code to save the classifier:
+        def save_class(classifier):
+            save_classifier = open('naivebayes.pickle', 'wb') 
+            pickle.dump(classifier, save_classifier)
+            save_classifier.close()
+        # Comment in/out if needed:
+        # save_class(classifier)
+
+    # Comment in/out if needed:
+    NB_Class(training_set, testing_set)
+
+    def MNB_Class(training_set, testing_set):
+        MNB_classifier = SklearnClassifier(MultinomialNB())
+        MNB_classifier.train(training_set)
+
+        print ('Multinomial Naive Bayes Algo accuracy (%):', \
+                nltk.classify.accuracy(MNB_classifier, testing_set)*100)
+
+    def GNB_Class(training_set, testing_set):
+        GNB_classifier = SklearnClassifier(GaussianNB())
+        GNB_classifier.train(training_set)
+
+        print ('Gaussian Naive Bayes Algo accuracy (%):', \
+                nltk.classify.accuracy(GNB_classifier, testing_set)*100)
+
+    def BNB_Class(training_set, testing_set):
+        BNB_classifier = SklearnClassifier(BernoulliNB())
+        BNB_classifier.train(training_set)
+
+        print ('Bernoulli Naive Bayes Algo accuracy (%):', \
+                nltk.classify.accuracy(BNB_classifier, testing_set)*100)
+
+    # Run all above new classification:
+    MNB_Class(training_set, testing_set)
+    # GNB_Class(training_set, testing_set)
+    BNB_Class(training_set, testing_set)
+
+    # LogisticRegression, SGDClassifier; SVC, LinearSVC, NuSVC:
+    # Note that we are using the defaults for each of the functions.
+    # They also accept parameters e.g. NuSVC(nu=0.5) etc.  
+
+    def LR_Class(training_set, testing_set):
+        LR_classifier = SklearnClassifier(LogisticRegression())
+        LR_classifier.train(training_set)
+
+        print ('LogisticRegression Algo accuracy (%):', \
+                nltk.classify.accuracy(LR_classifier, testing_set)*100)
+
+    def SGD_Class(training_set, testing_set):
+        SGD_classifier = SklearnClassifier(SGDClassifier())
+        SGD_classifier.train(training_set)
+
+        print ('SGDClassifier Algo accuracy (%):', \
+                nltk.classify.accuracy(SGD_classifier, testing_set)*100)
+
+    def SVC_Class(training_set, testing_set):
+        SVC_classifier = SklearnClassifier(SVC())
+        SVC_classifier.train(training_set)
+
+        print ('SVC Algo accuracy (%):', \
+                nltk.classify.accuracy(SVC_classifier, testing_set)*100)
+
+    def LSVC_Class(training_set, testing_set):
+        LSVC_classifier = SklearnClassifier(LinearSVC())
+        LSVC_classifier.train(training_set)
+
+        print ('LinearSVC Algo accuracy (%):', \
+                nltk.classify.accuracy(LSVC_classifier, testing_set)*100)
+
+    def NSVC_Class(training_set, testing_set):
+        NSVC_classifier = SklearnClassifier(NuSVC())
+        NSVC_classifier.train(training_set)
+
+        print ('NuSVC Algo accuracy (%):', \
+                nltk.classify.accuracy(NSVC_classifier, testing_set)*100)
+
+    # Run all above new classification:
+    LR_Class(training_set, testing_set)
+    SGD_Class(training_set, testing_set)  
+    SVC_Class(training_set, testing_set)  
+    LSVC_Class(training_set, testing_set)  
+    NSVC_Class(training_set, testing_set)  
+
+# Comment in/out to run this part:
+part_15()
 
  
