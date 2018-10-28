@@ -43,7 +43,7 @@ def get_last_update_id(updates):
     update_ids = []
     for update in updates["result"]:
         update_ids.append(int(update["update_id"]))
-    return max(update_ids)
+    return update_ids[-1]
 
 def handle_updates(updates):
     for update in updates["result"]:
